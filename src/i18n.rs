@@ -14,7 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use axum::{extract::FromRequestParts, http::request::Parts};
+use axum::{
+    extract::{FromRef, FromRequestParts},
+    http::request::Parts,
+};
 use axum_extra::extract::cookie::CookieJar;
 use fluent::concurrent::FluentBundle;
 use fluent::{FluentArgs, FluentResource};
@@ -22,15 +25,18 @@ use once_cell::sync::Lazy;
 use std::{collections::HashMap, fs, sync::Arc};
 use unic_langid::{LanguageIdentifier, langid};
 
+use crate::app_env::AppEnv;
+
 static DEFAULT_LOCALE: Lazy<LanguageIdentifier> = Lazy::new(|| langid!("en-US"));
 
 static SUPPORTED_LOCALES: Lazy<Vec<LanguageIdentifier>> =
     Lazy::new(|| vec![langid!("en-US"), langid!("es-US")]);
 
-static BUNDLES: Lazy<HashMap<LanguageIdentifier, Arc<FluentBundle<FluentResource>>>> =
-    Lazy::new(load_bundles);
+type BundleMap = HashMap<LanguageIdentifier, Arc<FluentBundle<FluentResource>>>;
 
-fn load_bundles() -> HashMap<LanguageIdentifier, Arc<FluentBundle<FluentResource>>> {
+static PRODUCTION_BUNDLES: Lazy<Arc<BundleMap>> = Lazy::new(|| Arc::new(load_bundles()));
+
+fn load_bundles() -> BundleMap {
     let mut bundles = HashMap::new();
 
     for locale in SUPPORTED_LOCALES.iter() {
@@ -60,12 +66,19 @@ fn load_bundles() -> HashMap<LanguageIdentifier, Arc<FluentBundle<FluentResource
 #[derive(Clone)]
 pub struct I18n {
     locale: LanguageIdentifier,
+    app_env: AppEnv,
+    bundles: Arc<BundleMap>,
 }
 
 impl I18n {
-    pub fn new(requested: &str) -> Self {
+    pub fn new(requested: &str, app_env: AppEnv) -> Self {
         let locale = resolve_locale(requested);
-        Self { locale }
+        let bundles = bundles_for_env(app_env);
+        Self {
+            locale,
+            app_env,
+            bundles,
+        }
     }
 
     pub fn locale(&self) -> &LanguageIdentifier {
@@ -85,25 +98,42 @@ impl I18n {
     // }
 
     fn tr_args(&self, id: &str, args: Option<&FluentArgs<'_>>) -> String {
-        let bundle = BUNDLES
+        let bundle = self
+            .bundles
             .get(&self.locale)
-            .or_else(|| BUNDLES.get(&DEFAULT_LOCALE))
+            .or_else(|| self.bundles.get(&DEFAULT_LOCALE))
             .expect("default locale bundle missing");
 
         let message = match bundle.get_message(id) {
             Some(message) => message,
-            None => return format!("??{}??", id),
+            None => {
+                if self.app_env.is_development() {
+                    eprintln!(
+                        "missing translation key '{}' for locale '{}'",
+                        id, self.locale
+                    );
+                }
+                return format!("??{}??", id);
+            }
         };
 
         let pattern = match message.value() {
             Some(value) => value,
-            None => return format!("??{}??", id),
+            None => {
+                if self.app_env.is_development() {
+                    eprintln!(
+                        "translation key '{}' for locale '{}' has no message value",
+                        id, self.locale
+                    );
+                }
+                return format!("??{}??", id);
+            }
         };
 
         let mut errors = Vec::new();
         let result = bundle.format_pattern(pattern, args, &mut errors);
 
-        if !errors.is_empty() {
+        if self.app_env.is_development() && !errors.is_empty() {
             eprintln!(
                 "translation formatting errors for key '{}': {:?}",
                 id, errors
@@ -111,6 +141,13 @@ impl I18n {
         }
 
         result.into_owned()
+    }
+}
+
+fn bundles_for_env(app_env: AppEnv) -> Arc<BundleMap> {
+    match app_env {
+        AppEnv::Production => PRODUCTION_BUNDLES.clone(),
+        AppEnv::Development => Arc::new(load_bundles()),
     }
 }
 
@@ -157,17 +194,41 @@ pub struct Locale(pub I18n);
 impl<S> FromRequestParts<S> for Locale
 where
     S: Send + Sync,
+    AppEnv: FromRef<S>,
 {
     type Rejection = std::convert::Infallible;
 
-    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
         let jar = CookieJar::from_headers(&parts.headers);
 
         let lang = jar
             .get("lang")
             .map(|c| c.value().to_string())
             .unwrap_or_else(|| "en-US".to_string());
+        let app_env = AppEnv::from_ref(state);
 
-        Ok(Locale(I18n::new(&lang)))
+        Ok(Locale(I18n::new(&lang, app_env)))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::bundles_for_env;
+    use crate::app_env::AppEnv;
+
+    #[test]
+    fn production_uses_shared_cached_bundles() {
+        let first = bundles_for_env(AppEnv::Production);
+        let second = bundles_for_env(AppEnv::Production);
+
+        assert!(std::sync::Arc::ptr_eq(&first, &second));
+    }
+
+    #[test]
+    fn development_reloads_bundles_for_each_request_scope() {
+        let first = bundles_for_env(AppEnv::Development);
+        let second = bundles_for_env(AppEnv::Development);
+
+        assert!(!std::sync::Arc::ptr_eq(&first, &second));
     }
 }

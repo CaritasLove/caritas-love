@@ -14,20 +14,31 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+mod app_env;
 mod filters;
 mod i18n;
 mod web;
 
 use axum::{
     Router,
+    extract::FromRef,
     routing::{get, post},
 };
 use sqlx::PgPool;
 use tower_http::services::ServeDir;
 
+use crate::app_env::AppEnv;
+
 #[derive(Clone)]
 pub struct AppState {
     db: PgPool,
+    app_env: AppEnv,
+}
+
+impl FromRef<AppState> for AppEnv {
+    fn from_ref(state: &AppState) -> Self {
+        state.app_env
+    }
 }
 
 #[tokio::main]
@@ -38,12 +49,13 @@ async fn main() {
     let app_host = std::env::var("APP_HOST").unwrap_or_else(|_| String::from("127.0.0.1"));
     let app_port = std::env::var("APP_PORT").unwrap_or_else(|_| String::from("3000"));
     let listen_addr = format!("{app_host}:{app_port}");
+    let app_env = AppEnv::from_system();
 
     let pool = PgPool::connect(&database_url)
         .await
         .expect("Failed to connect to database");
 
-    let app_state = AppState { db: pool };
+    let app_state = AppState { db: pool, app_env };
 
     let app = Router::new()
         .route("/hello", get(web::hello::hello_handler))
