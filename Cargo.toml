@@ -16,3 +16,6 @@ sqlx = { version = "0.8.6", features = ["macros", "postgres", "runtime-tokio"] }
 tokio = { version = "1.50.0", features = ["full"] }
 tower-http = { version = "0.6.8", features = ["fs"] }
 unic-langid = { version = "0.9.6", features = ["macros"] }
+
+[dev-dependencies]
+fluent-syntax = "0.12.0"
