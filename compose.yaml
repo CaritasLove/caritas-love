@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: caritas-postgres
+    environment:
+      POSTGRES_USER: caritas
+      POSTGRES_PASSWORD: caritas_dev_password
+      POSTGRES_DB: caritas
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./sql/init:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  pgdata:

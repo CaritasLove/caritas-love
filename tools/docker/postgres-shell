@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# postgres-shell
+
+set -euo pipefail
+
+# ---- Config (override via env if needed) ----
+CONTAINER_NAME="${POSTGRES_CONTAINER:-caritas-postgres}"
+DB_NAME="${POSTGRES_DB:-caritas}"
+DB_USER="${POSTGRES_USER:-caritas}"
+
+# ---- Check container is running ----
+if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "Error: container '${CONTAINER_NAME}' is not running."
+    echo "Try: docker compose up -d"
+    exit 1
+fi
+
+# ---- Exec into psql ----
+exec docker exec -it "$CONTAINER_NAME" \
+    psql -U "$DB_USER" -d "$DB_NAME"

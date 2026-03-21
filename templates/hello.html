@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "hello-title"|tr(i18n) }} | {{ "site-title"|tr(i18n) }}{% endblock %}
+
+{% block content %}
+    <h2>{{ message }}</h2>
+    <p>{{ "hello-body"|tr(i18n) }}</p>
+{% endblock %}
