@@ -58,12 +58,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v4
+      - uses: actions/cache@v5
+        with:
+          path: /tmp/.buildx-cache
+          key: buildx-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            buildx-cache-${{ runner.os }}-${{ github.sha }}
+            buildx-cache-${{ runner.os }}-
       - uses: docker/build-push-action@v7
         with:
           context: .
           push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
 
   coverage:
     name: Coverage
@@ -83,5 +91,4 @@ jobs:
           if [ ! -f ~/.cargo/bin/cargo-tarpaulin ]; then
             cargo install cargo-tarpaulin
           fi
-      # 1%? yeah, we should do better...
-      - run: cargo tarpaulin --fail-immediately --fail-under 0 --locked
+      - run: cargo tarpaulin --fail-immediately --fail-under 21 --locked
