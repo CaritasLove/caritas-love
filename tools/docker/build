@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# build
+
+set -euo pipefail
+
+# ---- Config (override via env if needed) ----
+IMAGE_NAME="${IMAGE_NAME:-caritas-love:latest}"
+
+# make sure we're at the root of the repository
+if [ ! -f "Dockerfile" ]; then
+    echo >&2 "Error: No Dockerfile found. Are you at the repository root?"
+    exit 1
+fi
+
+# build the docker image
+docker build "$@" \
+    --tag "${IMAGE_NAME}" \
+    .

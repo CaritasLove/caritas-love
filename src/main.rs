@@ -35,6 +35,9 @@ async fn main() {
     dotenvy::dotenv().ok();
 
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let app_host = std::env::var("APP_HOST").unwrap_or_else(|_| String::from("127.0.0.1"));
+    let app_port = std::env::var("APP_PORT").unwrap_or_else(|_| String::from("3000"));
+    let listen_addr = format!("{app_host}:{app_port}");
 
     let pool = PgPool::connect(&database_url)
         .await
@@ -51,11 +54,11 @@ async fn main() {
         .nest_service("/static", ServeDir::new("static"))
         .with_state(app_state);
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+    let listener = tokio::net::TcpListener::bind(&listen_addr)
         .await
         .expect("bind failed");
 
-    println!("Listening on http://127.0.0.1:3000");
+    println!("Listening on http://{listen_addr}");
 
     axum::serve(listener, app).await.expect("server failed");
 }
