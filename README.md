@@ -27,6 +27,7 @@ The application loads environment variables from `.env` on startup (`dotenvy`).
 | `APP_HOST` | No | `127.0.0.1` | Host/IP address the HTTP server binds to. |
 | `APP_PORT` | No | `3000` | Port the HTTP server binds to. |
 | `DATABASE_URL` | Yes | none | PostgreSQL connection string used by the app at runtime. |
+| `RUST_LOG` | No | `info` | Logging configuration for the application; see [env_logger](https://docs.rs/env_logger/latest/env_logger/#enabling-logging). |
 | `SQLX_OFFLINE` | No | unset | Primarily a development/build setting for SQLx query checking with the local `.sqlx` cache. |
 
 Example `.env`:
@@ -36,6 +37,7 @@ APP_ENV=development
 APP_HOST=127.0.0.1
 APP_PORT=3000
 DATABASE_URL=postgres://caritas:caritas_dev_password@localhost:5432/caritas
+RUST_LOG=trace
 SQLX_OFFLINE=true
 ```
 

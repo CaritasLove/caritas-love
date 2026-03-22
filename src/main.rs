@@ -17,6 +17,7 @@
 mod app_env;
 mod filters;
 mod i18n;
+mod logging;
 mod web;
 
 use axum::{
@@ -24,6 +25,7 @@ use axum::{
     extract::FromRef,
     routing::{get, post},
 };
+use log::{debug, error, info, trace, warn};
 use sqlx::PgPool;
 use tower_http::services::ServeDir;
 
@@ -50,6 +52,13 @@ async fn main() {
     let app_port = std::env::var("APP_PORT").unwrap_or_else(|_| String::from("3000"));
     let listen_addr = format!("{app_host}:{app_port}");
     let app_env = AppEnv::from_system();
+
+    let _log_handle = logging::init_logging("./log").expect("Failed to initialize logging");
+    info!("caritas-love starting");
+    debug!("debug logging enabled");
+    warn!("this warning goes to file and stderr");
+    error!("this error goes to file and stderr");
+    trace!("very detailed trace output");
 
     let pool = PgPool::connect(&database_url)
         .await

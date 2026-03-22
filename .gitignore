@@ -20,5 +20,8 @@ target
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# don't version our environment file
+# don't add our environment file to version control
 .env
+
+# don't add our log files to version control
+log
