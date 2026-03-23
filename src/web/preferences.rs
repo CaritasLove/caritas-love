@@ -15,13 +15,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use axum::{
-    extract::Form,
+    extract::{Form, FromRef, State},
     response::{IntoResponse, Redirect},
 };
 use axum_extra::extract::cookie::{Cookie, CookieJar, SameSite};
 use serde::Deserialize;
 
-use crate::i18n::{is_supported_locale, resolve_locale};
+use crate::{AppState, lang::DynLanguageDB};
 
 #[derive(Deserialize)]
 pub struct LanguageForm {
@@ -29,12 +29,14 @@ pub struct LanguageForm {
     pub return_to: String,
 }
 
-pub async fn set_language(jar: CookieJar, Form(form): Form<LanguageForm>) -> impl IntoResponse {
-    let locale = if is_supported_locale(&form.lang) {
-        resolve_locale(&form.lang).to_string()
-    } else {
-        "en-US".to_string()
-    };
+pub async fn set_language(
+    State(state): State<AppState>,
+    jar: CookieJar,
+    Form(form): Form<LanguageForm>,
+) -> impl IntoResponse {
+    let langdb = DynLanguageDB::from_ref(&state);
+
+    let locale = langdb.resolve_locale(&form.lang).to_string();
 
     let cookie = Cookie::build(("lang", locale))
         .path("/")

@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+use log::error;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AppEnv {
     Production,
@@ -37,17 +39,13 @@ impl AppEnv {
             "production" | "prod" => Self::Production,
             "development" | "dev" => Self::Development,
             _ => {
-                eprintln!(
+                error!(
                     "unknown APP_ENV value '{}'; falling back to production mode",
                     raw
                 );
                 Self::Production
             }
         }
-    }
-
-    pub fn is_development(self) -> bool {
-        self == Self::Development
     }
 }
 

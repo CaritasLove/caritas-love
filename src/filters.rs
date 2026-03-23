@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::i18n::I18n;
+use crate::web::Locale;
 
 #[askama::filter_fn]
 pub fn tr(
     value: impl std::fmt::Display,
     _env: &dyn askama::Values,
-    i18n: &I18n,
+    locale: &Locale,
 ) -> askama::Result<String> {
-    Ok(i18n.tr(&value.to_string()))
+    Ok(locale.tr(&value.to_string()))
 }

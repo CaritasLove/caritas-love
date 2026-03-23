@@ -248,7 +248,6 @@ dependencies = [
  "fluent",
  "fluent-syntax",
  "log",
- "once_cell",
  "regex",
  "serde",
  "sqlx",

@@ -21,10 +21,7 @@ use axum::{
 };
 // use serde::Deserialize;
 
-use crate::{
-    AppState, filters,
-    i18n::{I18n, Locale},
-};
+use crate::{AppState, filters, web::Locale};
 
 // #[derive(Deserialize, Default)]
 // pub struct HelloQuery {
@@ -34,7 +31,7 @@ use crate::{
 #[derive(Template)]
 #[template(path = "hello.html")]
 pub struct HelloTemplate {
-    pub i18n: I18n,
+    pub i18n: Locale,
     pub message: String,
     pub current_path: String,
 }
@@ -45,10 +42,7 @@ impl IntoResponse for HelloTemplate {
     }
 }
 
-pub async fn hello_handler(
-    State(state): State<AppState>,
-    Locale(i18n): Locale,
-) -> impl IntoResponse {
+pub async fn hello_handler(State(state): State<AppState>, i18n: Locale) -> impl IntoResponse {
     let message = sqlx::query_scalar!(
         r#"
         SELECT message
