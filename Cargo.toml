@@ -5,6 +5,7 @@ edition = "2024"
 license = "AGPL-3.0-or-later"
 
 [dependencies]
+argon2 = "0.5.3"
 askama = "0.15.6"
 axum = "0.8.8"
 axum-extra = { version = "0.12.5", features = ["cookie"] }
@@ -12,8 +13,10 @@ dotenvy = "0.15.7"
 flexi_logger = { version = "0.31.8", features = ["async", "compress"] }
 fluent = "0.17.0"
 log = "0.4.29"
+rand = "0.10.0"
 serde = "1.0.228"
-sqlx = { version = "0.8.6", features = ["macros", "postgres", "runtime-tokio"] }
+sha2 = "0.10.9"
+sqlx = { version = "0.8.6", features = ["migrate", "postgres", "runtime-tokio"] }
 template-check-derive = { version = "0.1.0", path = "template-check-derive" }
 tokio = { version = "1.50.0", features = ["full"] }
 tower-http = { version = "0.6.8", features = ["fs"] }
@@ -22,3 +25,4 @@ unic-langid = { version = "0.9.6", features = ["macros"] }
 [dev-dependencies]
 fluent-syntax = "0.12.0"
 regex = "1.12.3"
+tower = { version = "0.5.2", features = ["util"] }

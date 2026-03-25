@@ -14,42 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-mod app_env;
-mod filters;
-mod lang;
-mod logging;
-mod template;
-mod web;
-
-use axum::{
-    Router,
-    extract::FromRef,
-    routing::{get, post},
-};
+use caritas_love::{AppState, app_env::AppEnv, auth, build_app, lang, logging};
 use log::{debug, error, info, trace, warn};
 use sqlx::PgPool;
-use tower_http::services::ServeDir;
-
-use crate::{app_env::AppEnv, lang::DynLanguageDB};
-
-#[derive(Clone)]
-pub struct AppState {
-    app_env: AppEnv,
-    db: PgPool,
-    lang: DynLanguageDB,
-}
-
-impl FromRef<AppState> for AppEnv {
-    fn from_ref(state: &AppState) -> Self {
-        state.app_env
-    }
-}
-
-impl FromRef<AppState> for DynLanguageDB {
-    fn from_ref(state: &AppState) -> Self {
-        state.lang.clone()
-    }
-}
 
 #[tokio::main]
 async fn main() {
@@ -60,6 +27,7 @@ async fn main() {
     let app_port = std::env::var("APP_PORT").unwrap_or_else(|_| String::from("3000"));
     let listen_addr = format!("{app_host}:{app_port}");
     let app_env = AppEnv::from_system();
+    let auth_config = auth::AuthConfig::from_system(app_env);
 
     let _log_handle = logging::init_logging("./log").expect("Failed to initialize logging");
     info!("caritas-love starting");
@@ -72,18 +40,23 @@ async fn main() {
         .await
         .expect("Failed to connect to database");
 
+    auth::run_migrations(&db)
+        .await
+        .expect("Failed to run database migrations");
+    auth::bootstrap_admin_if_needed(&db, &auth_config)
+        .await
+        .expect("Failed to bootstrap admin account");
+
     let lang = lang::load_locales(app_env);
 
-    let app_state = AppState { app_env, db, lang };
+    let app_state = AppState {
+        app_env,
+        auth_config,
+        db,
+        lang,
+    };
 
-    let app = Router::new()
-        .route("/hello", get(web::hello::hello_handler))
-        .route(
-            "/preferences/language",
-            post(web::preferences::set_language),
-        )
-        .nest_service("/static", ServeDir::new("static"))
-        .with_state(app_state);
+    let app = build_app(app_state);
 
     let listener = tokio::net::TcpListener::bind(&listen_addr)
         .await

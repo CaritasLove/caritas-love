@@ -4,10 +4,8 @@ FROM rust:1.94-slim AS builder
 
 WORKDIR /app
 
-ENV SQLX_OFFLINE=true
-
 COPY Cargo.toml Cargo.lock ./
-COPY .sqlx ./.sqlx
+COPY migrations ./migrations
 COPY src ./src
 COPY static ./static
 COPY templates ./templates
@@ -25,6 +23,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/target/release/caritas-love /usr/local/bin/caritas-love
+COPY migrations ./migrations
 COPY static ./static
 COPY templates ./templates
 COPY locales ./locales

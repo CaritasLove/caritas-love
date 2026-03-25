@@ -3,16 +3,30 @@
 
 set -euo pipefail
 
+echo "rustup update stable && rustup default stable"
 rustup update stable && rustup default stable
+
+echo "tools/ci/check_rust_deps template-check-derive"
 tools/ci/check_rust_deps template-check-derive
 
 if ! command -v cargo-machete >/dev/null 2>&1; then
+    echo "cargo install cargo-machete"
     cargo install cargo-machete
 fi
+echo "cargo machete"
 cargo machete
 
+echo "cargo fmt --all -- --check"
 cargo fmt --all -- --check
+
+echo "cargo generate-lockfile --locked"
 cargo generate-lockfile --locked
+
+echo "cargo clippy --locked -- --deny warnings"
 cargo clippy --locked -- --deny warnings
+
+echo "cargo verify-project --locked"
 cargo verify-project --locked
+
+echo "cargo doc --no-deps"
 cargo doc --no-deps

@@ -1,0 +1,47 @@
+{#
+admin_dashboard.html
+Copyright 2026 Patrick Meade.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+
+{% extends "base.html" %}
+
+{% block title %}{{ "admin-dashboard-title"|tr(locale) }} | {{ "site-title"|tr(locale) }}{% endblock %}
+
+{% block content %}
+    <section class="page-intro action-row">
+        <div>
+            <h2>{{ "admin-dashboard-heading"|tr(locale) }}</h2>
+            <p>{{ "admin-dashboard-body"|tr(locale) }}</p>
+            <p class="card-note">
+                {{ "admin-dashboard-signed-in-as"|tr(locale) }}: <strong>{{ admin_username }}</strong>
+            </p>
+        </div>
+
+        <form method="post" action="/logout">
+            <button type="submit" class="secondary-button">{{ "auth-logout-button"|tr(locale) }}</button>
+        </form>
+    </section>
+
+    <section class="card-grid">
+        {% for area in areas %}
+            <article class="app-card">
+                <h3>{{ area.title_key|tr(locale) }}</h3>
+                <p>{{ area.body_key|tr(locale) }}</p>
+                <a class="button-link" href="{{ area.href }}">{{ "admin-dashboard-open-link"|tr(locale) }}</a>
+            </article>
+        {% endfor %}
+    </section>
+{% endblock %}

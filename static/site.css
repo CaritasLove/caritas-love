@@ -22,6 +22,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     --text: #1f2937;
     --border: #d1d5db;
     --accent: #1d4ed8;
+    --accent-soft: #dbeafe;
+    --success: #166534;
+    --success-bg: #dcfce7;
+    --warning: #92400e;
+    --warning-bg: #fef3c7;
+    --error: #991b1b;
+    --error-bg: #fee2e2;
 }
 
 * {
@@ -40,6 +47,10 @@ body {
     max-width: 960px;
     margin: 0 auto;
     padding: 1rem;
+}
+
+a {
+    color: var(--accent);
 }
 
 .site-header {
@@ -83,7 +94,125 @@ body {
 }
 
 .language-switcher select,
-.language-switcher button {
+.language-switcher button,
+button,
+input,
+select {
     font: inherit;
     padding: 0.35rem 0.5rem;
+}
+
+main.container {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+.page-intro h2,
+.panel h3 {
+    margin-top: 0;
+}
+
+.stacked-page {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.app-card,
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+}
+
+.app-card h3 {
+    margin-top: 0;
+}
+
+.card-note {
+    color: #4b5563;
+}
+
+.form-panel {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.form-panel label {
+    font-weight: 600;
+}
+
+input,
+select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: #fff;
+}
+
+button,
+.button-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.secondary-button {
+    background: transparent;
+    color: var(--accent);
+}
+
+.action-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.status-message {
+    margin: 0;
+    border-radius: 0.75rem;
+    padding: 0.9rem 1rem;
+    font-weight: 600;
+}
+
+.status-message.success {
+    color: var(--success);
+    background: var(--success-bg);
+}
+
+.status-message.warning {
+    color: var(--warning);
+    background: var(--warning-bg);
+}
+
+.status-message.error {
+    color: var(--error);
+    background: var(--error-bg);
+}
+
+@media (max-width: 640px) {
+    .language-switcher {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .language-switcher select {
+        flex: 1;
+    }
 }

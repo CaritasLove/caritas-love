@@ -1,0 +1,42 @@
+{#
+login_options.html
+Copyright 2026 Patrick Meade.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+
+{% extends "base.html" %}
+
+{% block title %}{{ "auth-login-title"|tr(locale) }} | {{ "site-title"|tr(locale) }}{% endblock %}
+
+{% block content %}
+    <section class="page-intro">
+        <h2>{{ "auth-login-heading"|tr(locale) }}</h2>
+        <p>{{ "auth-login-body"|tr(locale) }}</p>
+    </section>
+
+    <section class="card-grid">
+        <article class="app-card">
+            <h3>{{ "auth-admin-card-title"|tr(locale) }}</h3>
+            <p>{{ "auth-admin-card-body"|tr(locale) }}</p>
+            <a class="button-link" href="/login/admin">{{ "auth-admin-card-cta"|tr(locale) }}</a>
+        </article>
+
+        <article class="app-card">
+            <h3>{{ "auth-volunteer-card-title"|tr(locale) }}</h3>
+            <p>{{ "auth-volunteer-card-body"|tr(locale) }}</p>
+            <p class="card-note">{{ "auth-volunteer-card-note"|tr(locale) }}</p>
+        </article>
+    </section>
+{% endblock %}

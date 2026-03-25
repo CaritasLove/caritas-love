@@ -44,12 +44,12 @@ impl IntoResponse for HelloTemplate {
 }
 
 pub async fn hello_handler(State(state): State<AppState>, locale: Locale) -> impl IntoResponse {
-    let message = sqlx::query_scalar!(
+    let message: String = sqlx::query_scalar(
         r#"
         SELECT message
         FROM greeting
         WHERE id = 1
-        "#
+        "#,
     )
     .fetch_one(&state.db)
     .await
