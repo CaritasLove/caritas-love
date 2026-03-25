@@ -18,6 +18,7 @@ mod app_env;
 mod filters;
 mod lang;
 mod logging;
+mod template;
 mod web;
 
 use axum::{

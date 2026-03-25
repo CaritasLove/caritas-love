@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+//! Askama custom filters are looked up through a module literally named
+//! `filters`.
+//!
+//! That convention is hardcoded in Askama's derive implementation, so renaming
+//! this module will break `#[derive(Template)]` unless each template module
+//! adds an alias back to `filters`. Source:
+//! <https://docs.rs/crate/askama_derive/0.15.5/source/src/generator/filter.rs#L155-L160>
+
 use crate::web::Locale;
 
 #[askama::filter_fn]

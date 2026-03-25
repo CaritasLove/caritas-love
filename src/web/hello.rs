@@ -19,6 +19,7 @@ use axum::{
     extract::State,
     response::{Html, IntoResponse, Response},
 };
+use template_check_derive::CheckTemplate;
 // use serde::Deserialize;
 
 use crate::{AppState, filters, web::Locale};
@@ -28,12 +29,12 @@ use crate::{AppState, filters, web::Locale};
 //     pub lang: Option<String>,
 // }
 
-#[derive(Template)]
+#[derive(CheckTemplate, Template)]
 #[template(path = "hello.html")]
 pub struct HelloTemplate {
-    pub i18n: Locale,
-    pub message: String,
     pub current_path: String,
+    pub locale: Locale,
+    pub message: String,
 }
 
 impl IntoResponse for HelloTemplate {
@@ -42,7 +43,7 @@ impl IntoResponse for HelloTemplate {
     }
 }
 
-pub async fn hello_handler(State(state): State<AppState>, i18n: Locale) -> impl IntoResponse {
+pub async fn hello_handler(State(state): State<AppState>, locale: Locale) -> impl IntoResponse {
     let message = sqlx::query_scalar!(
         r#"
         SELECT message
@@ -55,7 +56,7 @@ pub async fn hello_handler(State(state): State<AppState>, i18n: Locale) -> impl 
     .expect("query failed");
 
     HelloTemplate {
-        i18n,
+        locale,
         message,
         current_path: "/hello".to_string(),
     }

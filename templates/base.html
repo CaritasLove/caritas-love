@@ -16,36 +16,36 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #}
 <!doctype html>
-<html lang="{{ i18n.locale() }}">
+<html lang="{{ locale.locale() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}{{ "site-title"|tr(i18n) }}{% endblock %}</title>
+    <title>{% block title %}{{ "site-title"|tr(locale) }}{% endblock %}</title>
     <link rel="stylesheet" href="/static/site.css">
 </head>
 <body>
     <header class="site-header">
         <div class="container header-row">
             <div>
-                <h1 class="site-title">{{ "site-title"|tr(i18n) }}</h1>
+                <h1 class="site-title">{{ "site-title"|tr(locale) }}</h1>
                 <nav class="site-nav" aria-label="Main navigation">
-                    <a href="/hello">{{ "nav-hello"|tr(i18n) }}</a>
+                    <a href="/hello">{{ "nav-hello"|tr(locale) }}</a>
                 </nav>
             </div>
 
             <form method="post" action="/preferences/language" class="language-switcher">
                 <input type="hidden" name="return_to" value="{{ current_path }}">
-                <label for="lang">{{ "common-language"|tr(i18n) }}</label>
+                <label for="lang">{{ "common-language"|tr(locale) }}</label>
                 <select id="lang" name="lang" onchange="this.form.submit()">
-                    <option value="en-US" {% if i18n.locale_str() == "en-US" %}selected{% endif %}>
+                    <option value="en-US" {% if locale.locale_str() == "en-US" %}selected{% endif %}>
                         English
                     </option>
-                    <option value="es-US" {% if i18n.locale_str() == "es-US" %}selected{% endif %}>
+                    <option value="es-US" {% if locale.locale_str() == "es-US" %}selected{% endif %}>
                         Español
                     </option>
                 </select>
                 <noscript>
-                    <button type="submit">{{ "common-save"|tr(i18n) }}</button>
+                    <button type="submit">{{ "common-save"|tr(locale) }}</button>
                 </noscript>
             </form>
         </div>
