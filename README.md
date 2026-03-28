@@ -52,3 +52,7 @@ Install the command line tools for sqlx:
 Update the cached data for offline development:
 
     cargo sqlx prepare
+
+Bootstrap a database container:
+
+    tools/docker/bootstrap-db

@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 mod app_env;
+mod auth;
 mod demo_mode;
 mod filters;
 mod lang;
@@ -94,6 +95,8 @@ async fn main() {
 
     let app = Router::new()
         .route("/hello", get(web::hello::hello_handler))
+        .route("/login", get(web::login::login_handler))
+        .route("/login", post(web::login::login_submit))
         .route(
             "/preferences/language",
             post(web::preferences::set_language),

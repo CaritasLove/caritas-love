@@ -1,0 +1,69 @@
+{#
+login.html
+Copyright 2026 Patrick Meade.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+
+{% extends "base.html" %}
+
+{% block title %}{{ "login-title"|tr(locale) }} | {{ "site-title"|tr(locale) }}{% endblock %}
+
+{% block content %}
+    <section class="auth-card stack">
+        <div class="stack">
+            <h2>{{ "login-heading"|tr(locale) }}</h2>
+            <p>{{ "login-body"|tr(locale) }}</p>
+        </div>
+
+        {% if login_failed %}
+            <p class="notice notice-error">{{ "login-error-invalid"|tr(locale) }}</p>
+        {% endif %}
+
+        {% if login_succeeded %}
+            <p class="notice notice-success">
+                {{ "login-success"|tr(locale) }} <strong>{{ username }}</strong>.
+            </p>
+        {% endif %}
+
+        <form method="post" action="/login" class="stack">
+            <div class="form-field">
+                <label for="username">{{ "login-username-label"|tr(locale) }}</label>
+                <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    value="{{ username }}"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <div class="form-field">
+                <label for="password">{{ "login-password-label"|tr(locale) }}</label>
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <div>
+                <button type="submit" class="button-primary">{{ "login-submit"|tr(locale) }}</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}

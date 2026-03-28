@@ -16,5 +16,6 @@
 
 site-title = Caritas Admin
 nav-hello = Hello
+nav-login = Login
 common-language = Language
 common-save = Save

@@ -4,7 +4,7 @@
 set -euo pipefail
 
 rustup update stable && rustup default stable
-tools/ci/check_rust_deps template-check-derive
+tools/ci/check_rust_deps sha2 template-check-derive
 
 if ! command -v cargo-machete >/dev/null 2>&1; then
     cargo install cargo-machete

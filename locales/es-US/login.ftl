@@ -1,4 +1,4 @@
-# common.ftl
+# login.ftl
 # Copyright 2026 Patrick Meade.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,8 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-site-title = Administración Caritas
-nav-hello = Hola
-nav-login = Iniciar sesión
-common-language = Idioma
-common-save = Guardar
+login-title = Iniciar sesión
+login-heading = Acceso administrativo
+login-body = Inicie sesión con un nombre de usuario y contraseña de administrador.
+login-username-label = Nombre de usuario
+login-password-label = Contraseña
+login-submit = Ingresar
+login-error-invalid = El nombre de usuario o la contraseña no fueron reconocidos.
+login-success = Inicio de sesión aceptado para

@@ -25,7 +25,7 @@ jobs:
             lint-cache-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
             lint-cache-${{ runner.os }}-
       - run: rustup update stable && rustup default stable
-      - run: tools/ci/check_rust_deps template-check-derive
+      - run: tools/ci/check_rust_deps sha2 template-check-derive
       - name: Run cargo install cargo-machete
         run: |
           if [ ! -f ~/.cargo/bin/cargo-machete ]; then

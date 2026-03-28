@@ -14,11 +14,35 @@
 -- You should have received a copy of the GNU Affero General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-CREATE TABLE IF NOT EXISTS greeting (
+CREATE TABLE IF NOT EXISTS admin_user (
     id BIGSERIAL PRIMARY KEY,
-    message TEXT NOT NULL
+    uuid uuid NOT NULL DEFAULT UUIDV7(),
+    date_created timestamptz NOT NULL DEFAULT NOW(),
+    date_updated timestamptz NOT NULL DEFAULT NOW(),
+    row_version INTEGER NOT NULL DEFAULT 1,
+
+    username TEXT NOT NULL UNIQUE,
+    password_salt TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    password_iterations INTEGER NOT NULL
 );
 
-INSERT INTO greeting (message)
-VALUES ('Hello, world!')
-ON CONFLICT DO NOTHING;
+CREATE TABLE IF NOT EXISTS db_meta (
+    id BIGSERIAL PRIMARY KEY,
+    uuid uuid NOT NULL DEFAULT UUIDV7(),
+    date_created timestamptz NOT NULL DEFAULT NOW(),
+    date_updated timestamptz NOT NULL DEFAULT NOW(),
+    row_version INTEGER NOT NULL DEFAULT 1,
+
+    schema_version INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS greeting (
+    id BIGSERIAL PRIMARY KEY,
+    uuid uuid NOT NULL DEFAULT UUIDV7(),
+    date_created timestamptz NOT NULL DEFAULT NOW(),
+    date_updated timestamptz NOT NULL DEFAULT NOW(),
+    row_version INTEGER NOT NULL DEFAULT 1,
+
+    message TEXT NOT NULL
+);

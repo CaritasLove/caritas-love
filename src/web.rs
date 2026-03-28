@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 pub mod hello;
+pub mod login;
 pub mod preferences;
 pub mod request_ip;
 

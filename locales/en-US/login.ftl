@@ -1,4 +1,4 @@
-# common.ftl
+# login.ftl
 # Copyright 2026 Patrick Meade.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,8 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-site-title = Administración Caritas
-nav-hello = Hola
-nav-login = Iniciar sesión
-common-language = Idioma
-common-save = Guardar
+login-title = Login
+login-heading = Admin Login
+login-body = Sign in with an administrator username and password.
+login-username-label = Username
+login-password-label = Password
+login-submit = Sign In
+login-error-invalid = The username or password was not recognized.
+login-success = Login accepted for

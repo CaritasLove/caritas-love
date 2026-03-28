@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# bootstrap-db
+
+set -euo pipefail
+
+docker compose down -v
+docker compose up -d
