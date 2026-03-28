@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 mod app_env;
+mod demo_mode;
 mod filters;
 mod lang;
 mod logging;
@@ -28,13 +29,15 @@ use axum::{
 };
 use log::{debug, error, info, trace, warn};
 use sqlx::PgPool;
+use std::net::SocketAddr;
 use tower_http::services::ServeDir;
 
-use crate::{app_env::AppEnv, lang::DynLanguageDB};
+use crate::{app_env::AppEnv, demo_mode::DemoMode, lang::DynLanguageDB};
 
 #[derive(Clone)]
 pub struct AppState {
     app_env: AppEnv,
+    demo_mode: DemoMode,
     db: PgPool,
     lang: DynLanguageDB,
 }
@@ -51,6 +54,12 @@ impl FromRef<AppState> for DynLanguageDB {
     }
 }
 
+impl FromRef<AppState> for DemoMode {
+    fn from_ref(state: &AppState) -> Self {
+        state.demo_mode
+    }
+}
+
 #[tokio::main]
 async fn main() {
     dotenvy::dotenv().ok();
@@ -60,9 +69,11 @@ async fn main() {
     let app_port = std::env::var("APP_PORT").unwrap_or_else(|_| String::from("3000"));
     let listen_addr = format!("{app_host}:{app_port}");
     let app_env = AppEnv::from_system();
+    let demo_mode = DemoMode::from_system();
 
     let _log_handle = logging::init_logging("./log").expect("Failed to initialize logging");
     info!("caritas-love starting");
+    info!("demo mode enabled: {}", demo_mode.is_enabled());
     debug!("debug logging enabled");
     warn!("this warning goes to file and stderr");
     error!("this error goes to file and stderr");
@@ -74,7 +85,12 @@ async fn main() {
 
     let lang = lang::load_locales(app_env);
 
-    let app_state = AppState { app_env, db, lang };
+    let app_state = AppState {
+        app_env,
+        demo_mode,
+        db,
+        lang,
+    };
 
     let app = Router::new()
         .route("/hello", get(web::hello::hello_handler))
@@ -91,5 +107,10 @@ async fn main() {
 
     info!("Listening on http://{}", listen_addr);
 
-    axum::serve(listener, app).await.expect("server failed");
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await
+    .expect("server failed");
 }

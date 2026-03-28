@@ -16,6 +16,7 @@
 
 pub mod hello;
 pub mod preferences;
+pub mod request_ip;
 
 use axum::{
     extract::{FromRef, FromRequestParts},
